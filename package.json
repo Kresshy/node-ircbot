@@ -1,0 +1,16 @@
+{
+  "name": "ircbot",
+  "version": "0.0.1",
+  "private": true,
+  "description": "An ircbot implementation in node.js",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kir-Dev",
+  "license": "ISC",
+  "dependencies": {
+    "irc": "^0.3.9",
+    "mongoose": "^3.8.24"
+  }
+}

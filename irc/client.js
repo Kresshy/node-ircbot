@@ -3,10 +3,12 @@
  */
 var irc = require('irc');
 
-var Bot = (function() {
+var Client = (function() {
+    "use strict";
+
     var instance = null;
 
-    function BotClass() {
+    function ClientClass() {
         var _client,
             _server,
             _name,
@@ -74,18 +76,18 @@ var Bot = (function() {
             say: function(dest, msg) {
                 _client.say(dest, msg);
             }
-        }
+        };
     }
 
     return {
         getInstance: function() {
             if (!instance) {
-                instance = new BotClass();
+                instance = new ClientClass();
             }
 
             return instance;
         }
-    }
+    };
 })();
 
-module.exports = Bot;
+module.exports = Client;

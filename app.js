@@ -1,38 +1,53 @@
 var mongoose = require('mongoose');
 var config = require('./config');
 var IrcBot = require('./irc/ircbot');
+var WebApp = require('./web/webapp');
 
-var db = mongoose.connection;
-var ircbot = new IrcBot();
+(function() {
+    "use strict";
 
-var connect = function () {
-    console.log('Connecting to MongoDB');
-    var options = { server: { socketOptions: { keepAlive: 1 } } };
-    mongoose.connect(config.db, options);
-};
+    var db = mongoose.connection;
+    var ircbot = new IrcBot();
+    var webapp = new WebApp();
 
-connect();
+    var connect = function () {
+        console.log('Connecting to MongoDB');
+        var options = { server: { socketOptions: { keepAlive: 1 } } };
+        mongoose.connect(config.db, options);
+    };
 
-/* mongodb event handlers */
-mongoose.connection.on('error', console.log);
+    connect();
 
-mongoose.connection.on('disconnected', connect);
+    /* mongodb event handlers */
+    mongoose.connection.on('error', console.log);
 
-mongoose.connection.once('open', function() {
-    console.log('Mongo working!');
-});
+    mongoose.connection.on('disconnected', connect);
 
-
-ircbot.on('connect', function (message) {
-    console.log('Connected to IRC server');
-});
-
-ircbot.on('error', function(message) {
-    console.error('ircbot error');
-});
-
-ircbot.initializeWithConfig(config);
-ircbot.connect();
+    mongoose.connection.once('open', function() {
+        console.log('Mongo working!');
+    });
 
 
+    ircbot.on('connect', function (message) {
+        console.log('Connected to IRC server');
+    });
 
+    ircbot.on('error', function(message) {
+        console.error('ircbot error');
+    });
+
+    ircbot.initializeWithConfig(config);
+    ircbot.connect();
+
+    webapp.on('start', function(message) {
+        console.log(message);
+    });
+
+    webapp.on('error', function(error) {
+        console.log(error);
+    });
+
+    webapp.initializeWithConfig(config);
+    webapp.listen();
+
+})();

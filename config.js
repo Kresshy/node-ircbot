@@ -5,5 +5,8 @@
 module.exports = {
     channels: ["##kir-dev-test"],
     server: "irc.freenode.net",
-    botName: "Bumblebee"
+    botName: "Bumblebee",
+    db: 'mongodb://localhost/ircbot',
+    port: 9000,
+    secret: 'SUPERsekret'
 };

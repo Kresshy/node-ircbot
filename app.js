@@ -5,15 +5,23 @@ var IrcBot = require('./irc/ircbot');
 var db = mongoose.connection;
 var ircbot = new IrcBot();
 
-db.on('error', function() {
-    console.error('connection error');
+var connect = function () {
+    console.log('Connecting to MongoDB');
+    var options = { server: { socketOptions: { keepAlive: 1 } } };
+    mongoose.connect(config.db, options);
+};
+
+connect();
+
+/* mongodb event handlers */
+mongoose.connection.on('error', console.log);
+
+mongoose.connection.on('disconnected', connect);
+
+mongoose.connection.once('open', function() {
+    console.log('Mongo working!');
 });
 
-db.once('open', function () {
-    console.log('Connected to MongoDB');
-});
-
-mongoose.connect('mongodb://localhost/ircbot');
 
 ircbot.on('connect', function (message) {
     console.log('Connected to IRC server');

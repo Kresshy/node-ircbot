@@ -12,78 +12,39 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var passport = require('passport');
 var session = require('express-session');
-var OAuth2Strategy = require('passport-oauth').OAuth2Strategy;
+var LocalStrategy = require('passport-local').Strategy;
 var request = require('request');
+var EventEmitter = require('events').EventEmitter;
 
 /* import the configuration */
-var config = require('./config');
+var config = require('../config');
 
 var port = process.env.PORT || config.port || 8080;
 
-/* import the routes handlers */
+/* import the route handlers */
 var index = require('./routes/index');
-var users = require('./routes/users');
-var books = require('./routes/books');
-var search = require('./routes/search');
-var lends = require('./routes/lends');
 
 /* import the required mongodb models */
-var User = require('./models/user');
+var User = require('../models/user');
 
 /* initialize passport to use OAuth2 strategy */
-passport.use(new OAuth2Strategy({
-        authorizationURL: 'https://auth.sch.bme.hu/site/login',
-        tokenURL: 'https://auth.sch.bme.hu/oauth2/token',
-        clientID: '11302795928792584158',
-        clientSecret: 'modXHTs7vs7uJl9XcJ8KcYJ0RaAeV618jTVqnEmZwjJ7KHUnRRytq8t9XtctpSqOmC6QGip3HzzS7J7O',
-        callbackURL: "http://127.0.0.1:4567/auth"
-    },
-    function(accessToken, refreshToken, profile, done) {
+passport.use(new LocalStrategy(
+    function(email, password, done) {
+        User.findOne({ email: email }, function(err, user) {
+            if (err) {
+                return done(err);
+            }
 
-        // getting the profile data isn't the part of the OAuth
-        // standard so we must do this here by this request
-        // because it is custom for every strategy
-        request.get(
-            'https://auth.sch.bme.hu/api/profile?access_token=' + accessToken,
-            function(error, response, body) {
-                if (error)
-                    console.error(error.message);
+            if (!user) {
+                return done(null, false, { message: 'Incorrect email.' });
+            }
 
-                // the response body contains the profile data
-                var res = JSON.parse(body);
-                console.log(res);
+            if (!user.validPassword(password)) {
+                return done(null, false, { message: 'Incorrect password.' });
+            }
 
-                var loginUser = new User({
-                    internal_id: res.internal_id,
-                    name: res.displayName,
-                    email: res.mail,
-                    sn: res.sn,
-                    given_name: res.givenName,
-                    room_number: res.roomNumber,
-                    basic: res.basic,
-                });
-
-                // first we look up the user in our database
-                User.findOne({internal_id: loginUser.internal_id}, function(err, user) {
-                    if (err) {
-                        return console.error('Error: ', err);
-                    }
-
-                    // if the user not found then we insert into the db else resolve the function
-                    if (!user) {
-                        loginUser.save( function(err, savedUser) {
-                            if (err) {
-                                return console.error('Error: ', err);
-                            }
-
-                            done(err, savedUser);
-                        });
-
-                    } else {
-                        done(err, user);
-                    }
-                });
-            });
+            return done(null, user);
+        });
     }
 ));
 
@@ -150,29 +111,19 @@ app.use(passport.session());
 /* routes and handlers */
 app.use('/', index);
 
-app.use('/profile', authenticated, users.profile);
-app.use('/user', users.id);
+app.get('/login', function(req, res, next) {
+    "use strict";
 
-app.use('/lend/new', authenticated, lends.newLend);
-app.use('/lend/show', lends.id);
-app.use('/lend/list', lends.list);
-app.use('/lend/user', lends.user);
-
-app.use('/book/new', authenticated, books.newBook);
-app.use('/book/show', books.id);
-app.use('/book/list', books.list);
-
-app.use('/search', search);
+});
 
 /* login and redirect callback for OAuth2 strategy */
-app.get('/login', passport.authenticate('oauth2', {
-    scope: ['basic', 'displayName', 'sn', 'givenName', 'mail', 'linkedAccounts', 'roomNumber']
-}));
-
-app.get('/auth', passport.authenticate('oauth2', {
-    failureRedirect: '/auth/fail',
-    successRedirect: '/'
-}));
+app.post('/login',
+    passport.authenticate('local', {
+        successRedirect: '/',
+        failureRedirect: '/login',
+        failureFlash: true }
+    )
+);
 
 app.get('/logout', function(req, res){
     req.logout();

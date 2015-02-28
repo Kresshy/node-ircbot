@@ -26,6 +26,7 @@ function WebApp() {
     "use strict";
     var _config;
     var _port = process.env.PORT || config.port || 8080;
+    var _eventEmitter = new EventEmitter();
 
     /* initialize passport to use OAuth2 strategy */
     passport.use(new LocalStrategy(
@@ -127,6 +128,8 @@ function WebApp() {
 // development error handler
 // will print stacktrace
     if (app.get('env') === 'development') {
+        _eventEmitter.emit('error', err);
+
         app.use(function (err, req, res, next) {
             res.status(err.status || 500);
             res.render('error', {
@@ -139,6 +142,8 @@ function WebApp() {
 // production error handler
 // no stacktraces leaked to user
     app.use(function (err, req, res, next) {
+        _eventEmitter.emit('error', err);
+
         res.status(err.status || 500);
         res.render('error', {
             message: err.message,
@@ -146,22 +151,22 @@ function WebApp() {
         });
     });
 
-    /* application listen on configured port */
-    app.listen(port, '0.0.0.0', function () {
-        console.log('Application listen\'s on port: ' + port);
-    });
+
 
     return {
         initializeWithConfig: function(config) {
-            config = config;
-        },
-        connect: function() {
 
-            _client.connect();
-            initializeEventHandlers();
+            _config = config;
+        },
+        listen: function() {
+
+            /* application listen on configured port */
+            app.listen(_port, '0.0.0.0', function () {
+                _eventEmitter.emit('start', 'Application listen\'s on port: ' + _port);
+            });
         },
         on: function(event, cb) {
-            var _events = ['connect', 'error', 'quit'];
+            var _events = ['start', 'error', 'quit'];
 
             if(_events.indexOf(event) === -1) {
                 console.error('unsupported event');

@@ -1,8 +1,9 @@
 var mongoose = require('mongoose');
 var config = require('./config');
-var ircbot = require('./irc/ircbot');
+var IrcBot = require('./irc/ircbot');
 
 var db = mongoose.connection;
+var ircbot = new IrcBot();
 
 db.on('error', function() {
     console.error('connection error:')
@@ -22,3 +23,6 @@ ircbot.on('error', function(message) {
 
 ircbot.initializeWithConfig(config);
 ircbot.connect();
+
+
+

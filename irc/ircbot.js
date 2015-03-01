@@ -8,12 +8,18 @@ var User = require('./user');
 var Log = require('../models/log');
 var EventEmitter = require('events').EventEmitter;
 
-function IrcBot() {
+function IrcBot(config) {
     "use strict";
 
     var _client = Client.getInstance();
     var _channels = {};
     var _eventEmitter = new EventEmitter();
+
+    _client.setServer(config.server);
+    _client.setName(config.botName);
+    _client.setChannels(config.channels);
+
+    initializeChannels(config.channels);
 
     function initializeEventHandlers() {
 
@@ -139,7 +145,6 @@ function IrcBot() {
     }
 
     function isCommand(message) {
-
         return new RegExp(/^@.*?[^\s]+/i).test(message);
     }
 
@@ -157,24 +162,7 @@ function IrcBot() {
     }
 
     return {
-        initialize: function (url, name, channels) {
-
-            _client.setServer(url);
-            _client.setName(name);
-            _client.setChannels(channels);
-
-            initializeChannels(channels);
-        },
-        initializeWithConfig: function(config) {
-
-            _client.setServer(config.server);
-            _client.setName(config.botName);
-            _client.setChannels(config.channels);
-
-            initializeChannels(config.channels);
-        },
         connect: function() {
-
             _client.connect();
             initializeEventHandlers();
         },

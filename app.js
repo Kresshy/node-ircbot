@@ -7,21 +7,31 @@ var WebApp = require('./web/webapp');
     "use strict";
 
     var db = mongoose.connection;
-    var ircbot = new IrcBot();
-    var webapp = new WebApp();
+    var ircbot = new IrcBot(config.ircbot);
+    var webapp = new WebApp(config.webapp);
+
+    var _failedDbConnection = false;
 
     var connect = function () {
+        if (_failedDbConnection)
+            return;
+
         console.log('Connecting to MongoDB');
         var options = { server: { socketOptions: { keepAlive: 1 } } };
-        mongoose.connect(config.db, options);
+        mongoose.connect(config.database.db, options);
     };
 
     connect();
 
     /* mongodb event handlers */
-    mongoose.connection.on('error', console.log);
+    mongoose.connection.on('error', function(err){
+        _failedDbConnection = true;
+        console.error(err);
+    });
 
-    mongoose.connection.on('disconnected', connect);
+    mongoose.connection.on('disconnected', function() {
+        connect();
+    });
 
     mongoose.connection.once('open', function() {
         console.log('Mongo working!');
@@ -36,7 +46,6 @@ var WebApp = require('./web/webapp');
         console.error('ircbot error');
     });
 
-    ircbot.initializeWithConfig(config);
     ircbot.connect();
 
     webapp.on('start', function(message) {
@@ -47,7 +56,6 @@ var WebApp = require('./web/webapp');
         console.log(error);
     });
 
-    webapp.initializeWithConfig(config);
     webapp.listen();
 
 })();

@@ -22,9 +22,10 @@ var User = require('../models/user');
 /* import the route handlers */
 var index = require('./routes/index');
 
-function WebApp() {
+function WebApp(config) {
     "use strict";
-    var _config;
+
+    var _config = config;
     var _port = process.env.PORT || config.port || 8080;
     var _eventEmitter = new EventEmitter();
 
@@ -128,9 +129,9 @@ function WebApp() {
 // development error handler
 // will print stacktrace
     if (app.get('env') === 'development') {
-        _eventEmitter.emit('error', err);
-
         app.use(function (err, req, res, next) {
+            _eventEmitter.emit('error', err);
+
             res.status(err.status || 500);
             res.render('error', {
                 message: err.message,
@@ -154,10 +155,6 @@ function WebApp() {
 
 
     return {
-        initializeWithConfig: function(config) {
-
-            _config = config;
-        },
         listen: function() {
 
             /* application listen on configured port */
@@ -176,6 +173,6 @@ function WebApp() {
             _eventEmitter.on(event, cb);
         }
     };
-};
+}
 
 module.exports = WebApp;

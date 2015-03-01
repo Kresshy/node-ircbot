@@ -15,13 +15,15 @@ var session = require('express-session');
 var LocalStrategy = require('passport-local').Strategy;
 var request = require('request');
 var EventEmitter = require('events').EventEmitter;
-var expressHbs = require('express3-handlebars');
+var expressHbs = require('express-handlebars');
 
 /* import the required mongodb models */
 var User = require('../models/user');
 
 /* import the route handlers */
 var index = require('./routes/index');
+var login = require('./routes/login');
+var logout = require('./routes/logout');
 
 function WebApp(config) {
     "use strict";
@@ -99,25 +101,9 @@ function WebApp(config) {
 
     /* routes and handlers */
     app.use('/', index);
+    app.use('/login', login);
+    app.use('/logout', logout);
 
-    app.get('/login', function (req, res, next) {
-        res.render('login');
-    });
-
-    /* login and redirect callback for OAuth2 strategy */
-    app.post('/login',
-        passport.authenticate('local', {
-                successRedirect: '/',
-                failureRedirect: '/login',
-                failureFlash: true
-            }
-        )
-    );
-
-    app.get('/logout', function (req, res) {
-        req.logout();
-        res.redirect('/');
-    });
 
 
 // catch 404 and forward to error handler
@@ -154,8 +140,6 @@ function WebApp(config) {
             error: {}
         });
     });
-
-
 
     return {
         listen: function() {

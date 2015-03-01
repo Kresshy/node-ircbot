@@ -15,6 +15,7 @@ var session = require('express-session');
 var LocalStrategy = require('passport-local').Strategy;
 var request = require('request');
 var EventEmitter = require('events').EventEmitter;
+var expressHbs = require('express3-handlebars');
 
 /* import the required mongodb models */
 var User = require('../models/user');
@@ -81,7 +82,9 @@ function WebApp(config) {
 
     /* initialize view template engine */
     app.set('views', path.join(__dirname, 'views'));
-    app.set('view engine', 'ejs');
+
+    app.engine('hbs', expressHbs({extname: 'hbs'}));
+    app.set('view engine', 'hbs');
 
     // uncomment after placing your favicon in /public
     //app.use(favicon(__dirname + '/public/favicon.ico'));

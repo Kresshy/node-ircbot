@@ -57,5 +57,4 @@ var WebApp = require('./web/webapp');
     });
 
     webapp.listen();
-
 })();

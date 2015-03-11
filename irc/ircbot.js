@@ -14,6 +14,7 @@ function IrcBot(config) {
     var _client = Client.getInstance();
     var _channels = {};
     var _eventEmitter = new EventEmitter();
+    var _commands = {};
 
     _client.setServer(config.server);
     _client.setName(config.botName);
@@ -47,63 +48,16 @@ function IrcBot(config) {
         });
 
         _client.on('message', function (from, to, message) {
-            var logMessage = true;
 
+            var logMessage = true;
             var command = message.match(/^@.*?[^\s]+/i);
 
             if (!command) {
-                command = ['message'];
+                return;
             }
 
-            switch (command[0].trim()) {
-                case '@off':
-                    logMessage = false;
-                    _client.say(to, '@off -- Excluding previous message');
-
-                    break;
-
-                case '@here':
-                    var users = _channels[to].getUsers();
-                    var notify = [];
-
-                    users.forEach(function (value) {
-
-                        if (value.getNick() !== from && value.getNick() !== _client.getName()) {
-                            notify.push(value.getNick());
-                        }
-                    });
-
-                    if (notify.length > 0) {
-                        _client.say(to, notify.join(' '));
-                    } else {
-                        _client.say(to, 'The room is empty, there aren\'t anyone to notify...');
-                    }
-
-                    break;
-
-                case '@history':
-                    Log.find().sort({date: -1}).limit(10).exec(function (err, logs) {
-                        logs.forEach(function (log) {
-                            _client.say(from, log.nick + ' - ' + log.channel + ' - ' + log.date + ' || ' + log.message);
-                        });
-                    });
-
-                    break;
-
-                case '@reminder':
-                    _client.say(to, 'Not yet implemented feature');
-
-                    break;
-
-                case '@help':
-                    _client.say(from, printHelp());
-
-                    break;
-                case 'message':
-                    break;
-                default:
-                    console.error('Unknown command' + command[0]);
-                    break;
+            if (_commands[command[0]] !== undefined) {
+               logMessage = _commands[command[0]](from, to, message, _client);
             }
 
             if (!logMessage) {
@@ -144,29 +98,29 @@ function IrcBot(config) {
         });
     }
 
-    function isCommand(message) {
-        return new RegExp(/^@.*?[^\s]+/i).test(message);
+    function isCommand(command) {
+        return !command.match(/^@.*/i);
     }
 
     function printHelp() {
 
-        return "IrcBot Help:\n\n" +
+        var helpText = "IrcBot Help:\n\n" +
             "\n" +
-            "Commands:\n\n" +
-            "	@help - prints this stuff\n" +
-            "	@off - the message does not stored in the log\n" +
-            "	@history - prints the last 10 messages\n" +
-            "	@here - mentions everyone in the room\n" +
-            "	@reminder - reminder for a user when joins to channel\n" +
-            "\n";
+            "Commands:\n\n";
+
+        // TODO
+
+        return helpText;
     }
 
     return {
-        connect: function() {
+        connect: function () {
+
             _client.connect();
             initializeEventHandlers();
         },
-        on: function(event, cb) {
+        on: function (event, cb) {
+
             var _events = ['connect', 'error', 'quit'];
 
             if(_events.indexOf(event) === -1) {
@@ -175,6 +129,23 @@ function IrcBot(config) {
             }
 
             _eventEmitter.on(event, cb);
+        },
+        command: function (command, cb) {
+
+            if (isCommand(command)) {
+                console.error('bad command format: @example');
+                return;
+            }
+
+            if (_commands[command] !== undefined) {
+                console.error('command already defined');
+                return;
+            }
+
+            _commands[command] = cb;
+        },
+        getChannelInfo: function(channel) {
+            return _channels[channel];
         }
     };
 }

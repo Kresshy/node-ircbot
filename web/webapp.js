@@ -104,19 +104,17 @@ function WebApp(config) {
     app.use('/login', login);
     app.use('/logout', logout);
 
-
-
-// catch 404 and forward to error handler
+    // catch 404 and forward to error handler
     app.use(function (req, res, next) {
         var err = new Error('Not Found');
         err.status = 404;
         next(err);
     });
 
-// error handlers
+    // error handlers
 
-// development error handler
-// will print stacktrace
+    // development error handler
+    // will print stacktrace
     if (app.get('env') === 'development') {
         app.use(function (err, req, res, next) {
             _eventEmitter.emit('error', err);
@@ -129,8 +127,8 @@ function WebApp(config) {
         });
     }
 
-// production error handler
-// no stacktraces leaked to user
+    // production error handler
+    // no stacktraces leaked to user
     app.use(function (err, req, res, next) {
         _eventEmitter.emit('error', err);
 
@@ -142,17 +140,17 @@ function WebApp(config) {
     });
 
     return {
-        listen: function() {
+        listen: function () {
 
             /* application listen on configured port */
             app.listen(_port, '0.0.0.0', function () {
                 _eventEmitter.emit('start', 'Application listen\'s on port: ' + _port);
             });
         },
-        on: function(event, cb) {
+        on: function (event, cb) {
             var _events = ['start', 'error', 'quit'];
 
-            if(_events.indexOf(event) === -1) {
+            if (_events.indexOf(event) === -1) {
                 console.error('unsupported event');
                 return;
             }

@@ -7,10 +7,11 @@ function Command() {
 
     var _name,
         _log,
-        _handler;
+        _handler,
+        _help;
 
     function isValidName(name) {
-        return !!command.match(/^@.*?[^\s]+/i);
+        return !!name.match(/^@.*?[^\s]+/i);
     }
 
     return {
@@ -72,8 +73,20 @@ function Command() {
             }
 
             _handler = handler;
+        },
+        help: function(help) {
+
+            if (arguments.length === 0)
+                return _help;
+
+            if ('string' !== typeof help) {
+                console.error('help must be a string!');
+                return;
+            }
+
+            _help = help;
         }
-    }
+    };
 }
 
-module.exports = Command();
+module.exports = Command;

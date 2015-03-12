@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 var config = require('./config');
-var IrcBot = require('./irc/bot/irc-bot');
+var IrcApp = require('./irc/ircapp');
 var WebApp = require('./web/webapp');
 var Log = require('./models/log');
 var User = require('./models/user');
@@ -9,8 +9,8 @@ var User = require('./models/user');
     "use strict";
 
     var db = mongoose.connection;
-    var ircbot = new IrcBot(config.ircbot);
     var webapp = new WebApp(config.webapp);
+    var ircapp = new IrcApp(config.ircbot);
 
     var _failedDbConnection = false;
 
@@ -39,53 +39,16 @@ var User = require('./models/user');
         console.log('Mongo working!');
     });
 
-    ircbot.on('connect', function (message) {
+
+    ircapp.on('connect', function (message) {
         console.log('Connected to IRC server');
     });
 
-    ircbot.on('error', function(message) {
+    ircapp.on('error', function(message) {
         console.error('ircbot error');
     });
 
-    ircbot.command('@off', function(from, to, message, client) {
-
-        client.say(to, '@off -- Excluding previous message');
-        return false;
-    });
-
-    ircbot.command('@here', function(from, to, message, client) {
-
-        var users = ircbot.channel(to).getUsers();
-        var notify = [];
-
-        users.forEach(function (value) {
-
-            if (value.getNick() !== from && value.getNick() !== client.getName()) {
-                notify.push(value.getNick());
-            }
-        });
-
-        if (notify.length > 0) {
-            client.say(to, notify.join(' '));
-        } else {
-            client.say(to, 'The room is empty, there aren\'t anyone to notify...');
-        }
-
-        return true;
-    });
-
-    ircbot.command('@history', function(from, to, message, client) {
-
-        Log.find().sort({date: -1}).limit(10).exec(function (err, logs) {
-            logs.forEach(function (log) {
-                client.say(from, log.nick + ' - ' + log.channel + ' - ' + log.date + ' || ' + log.message);
-            });
-        });
-
-        return true;
-    });
-
-    ircbot.connect();
+    ircapp.connect();
 
     webapp.on('start', function(message) {
         console.log(message);

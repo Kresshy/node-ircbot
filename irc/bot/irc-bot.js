@@ -86,6 +86,10 @@ var Bot = (function IrcBot() {
                 });
             });
 
+            _client.on('pm', function(from, message) {
+                console.log(from + ' => ' + message);
+            });
+
             _client.on('quit', function (nick, reason, channels) {
 
                 channels.forEach(function (value, index) {
@@ -135,7 +139,7 @@ var Bot = (function IrcBot() {
 
                 _eventEmitter.on(event, cb);
             },
-            command: function (command) {
+            command: function (command, pm) {
 
                 _commands[command.name()] = command;
             },

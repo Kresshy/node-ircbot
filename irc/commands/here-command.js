@@ -30,7 +30,7 @@ command.handler(function(from, to, message, client) {
     if (notify.length > 0) {
         client.say(to, notify.join(' '));
     } else {
-        client.say(to, 'The room is empty, there aren\'t anyone to notify...');
+        client.say(to, 'The room is empty, there isn\'t anyone to notify...');
     }
 });
 

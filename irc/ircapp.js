@@ -10,6 +10,7 @@ var off = require('./commands/off-command');
 var here = require('./commands/here-command');
 var history = require('./commands/history-command');
 var reminder = require('./commands/reminder-command');
+var help = require('./commands/help-command');
 
 function IrcApp(config) {
 
@@ -19,6 +20,7 @@ function IrcApp(config) {
     ircbot.command(here);
     ircbot.command(history);
     ircbot.command(reminder);
+    ircbot.command(help);
 
     return {
         connect: function () {

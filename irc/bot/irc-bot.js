@@ -139,6 +139,9 @@ var Bot = (function IrcBot() {
 
                 _commands[command.name()] = command;
             },
+            getCommands: function() {
+                return _commands;
+            },
             channel: function(channel) {
 
                 return _channels[channel];

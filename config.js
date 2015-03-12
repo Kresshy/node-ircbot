@@ -9,7 +9,7 @@ module.exports = {
     ircbot: {
         channels: ["##kir-dev-test"],
         server: "irc.freenode.net",
-        botName: "Bumblebee"
+        botName: "Jezz"
     },
     webapp: {
         port: 9000,

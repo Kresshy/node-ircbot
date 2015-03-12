@@ -2,10 +2,10 @@
  * Created by Szabolcs on 2015.02.27..
  */
 
-var Client = require('./client');
-var Channel = require('./channel');
-var User = require('./user');
-var Log = require('../models/log');
+var Client = require('./irc-client');
+var Channel = require('./irc-channel');
+var User = require('./irc-user');
+var Log = require('../../models/log');
 var EventEmitter = require('events').EventEmitter;
 
 function IrcBot(config) {
@@ -50,15 +50,20 @@ function IrcBot(config) {
         _client.on('message', function (from, to, message) {
 
             var logMessage = true;
-            var command = message.match(/^@.*?[^\s]+/i);
+            var receivedCommand = message.match(/^@.*?[^\s]+/i);
+            var command = null;
 
-            if (!command) {
+            if (!receivedCommand) {
                 return;
             }
 
-            if (_commands[command[0]] !== undefined) {
-               logMessage = _commands[command[0]](from, to, message, _client);
+            command = _commands[receivedCommand[0].trim()];
+
+            if (command !== null) {
+               command.handler()(from, to, message, _client);
             }
+
+            logMessage = command.log();
 
             if (!logMessage) {
                 return;
@@ -98,10 +103,6 @@ function IrcBot(config) {
         });
     }
 
-    function isCommand(command) {
-        return !command.match(/^@.*/i);
-    }
-
     function printHelp() {
 
         var helpText = "IrcBot Help:\n\n" +
@@ -130,21 +131,12 @@ function IrcBot(config) {
 
             _eventEmitter.on(event, cb);
         },
-        command: function (command, cb) {
+        command: function (command) {
 
-            if (isCommand(command)) {
-                console.error('bad command format: @example');
-                return;
-            }
-
-            if (_commands[command] !== undefined) {
-                console.error('command already defined');
-                return;
-            }
-
-            _commands[command] = cb;
+            _commands[command.name()] = command;
         },
-        getChannelInfo: function(channel) {
+        channel: function(channel) {
+
             return _channels[channel];
         }
     };

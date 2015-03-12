@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 var config = require('./config');
-var IrcBot = require('./irc/ircbot');
+var IrcBot = require('./irc/bot/irc-bot');
 var WebApp = require('./web/webapp');
 var Log = require('./models/log');
 var User = require('./models/user');
@@ -55,7 +55,7 @@ var User = require('./models/user');
 
     ircbot.command('@here', function(from, to, message, client) {
 
-        var users = ircbot.getChannelInfo(to).getUsers();
+        var users = ircbot.channel(to).getUsers();
         var notify = [];
 
         users.forEach(function (value) {
@@ -81,6 +81,8 @@ var User = require('./models/user');
                 client.say(from, log.nick + ' - ' + log.channel + ' - ' + log.date + ' || ' + log.message);
             });
         });
+
+        return true;
     });
 
     ircbot.connect();

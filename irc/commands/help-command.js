@@ -9,7 +9,7 @@ var IrcBot = require('../bot/irc-bot');
 
 var command = new Command();
 
-command.name('@help');
+command.name('!help');
 
 command.log(false);
 
@@ -28,6 +28,6 @@ command.handler(function(from, to, message, client) {
     client.say(from, help);
 });
 
-command.help('@help -- prints out this text as a private message');
+command.help('!help -- prints out this text as a private message');
 
 module.exports = command;

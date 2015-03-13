@@ -11,7 +11,7 @@ function Command() {
         _help;
 
     function isValidName(name) {
-        return !!name.match(/^@.*?[^\s]+/i);
+        return !!name.match(/^!.*?[^\s]+/i);
     }
 
     return {

@@ -9,7 +9,7 @@ var IrcBot = require('../bot/irc-bot');
 
 var command = new Command();
 
-command.name('@history');
+command.name('!history');
 
 command.log(true);
 
@@ -22,6 +22,6 @@ command.handler(function(from, to, message, client) {
     });
 });
 
-command.help('@history -- sends the last log items of the room for the user as a private message');
+command.help('!history -- sends the last log items of the room for the user as a private message');
 
 module.exports = command;

@@ -54,7 +54,7 @@ var Bot = (function IrcBot() {
             _client.on('message', function (from, to, message) {
 
                 var logMessage = true;
-                var receivedCommand = message.match(/^@.*?[^\s]+/i);
+                var receivedCommand = message.match(/^!.*?[^\s]+/i);
                 var command = null;
 
                 if (receivedCommand) {

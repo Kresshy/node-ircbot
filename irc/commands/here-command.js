@@ -9,7 +9,7 @@ var IrcBot = require('../bot/irc-bot');
 
 var command = new Command();
 
-command.name('@here');
+command.name('!here');
 
 command.log(true);
 
@@ -34,6 +34,6 @@ command.handler(function(from, to, message, client) {
     }
 });
 
-command.help('@here -- mentioning all the users in the room');
+command.help('!here -- mentioning all the users in the room');
 
 module.exports = command;

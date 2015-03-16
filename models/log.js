@@ -12,4 +12,4 @@ var logSchema = new Schema({
     date: {type: Date, default: Date.now}
 });
 
-module.exports = mongoose.model('LogModel', logSchema);
+module.exports = mongoose.model('Log', logSchema);

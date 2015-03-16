@@ -9,4 +9,4 @@ var channelSchema = new Schema({
     name: String
 });
 
-module.exports = mongoose.model('IrcChannel', channelSchema);
+module.exports = mongoose.model('Channel', channelSchema);

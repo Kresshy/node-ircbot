@@ -32,3 +32,7 @@ node_modules
 
 #configuration file
 config.js
+
+#ignore scss generated files
+web/public/styles/*.css.map
+web/public/styles/*.css

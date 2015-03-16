@@ -3,13 +3,13 @@
  */
 
 var express = require('express');
-var Log = require('../../models/log');
+var LogModel = require('../../models/log');
 var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res) {
 
-    Log.find().limit(40).exec(function(err, logs) {
+    LogModel.find().limit(40).exec(function(err, logs) {
 
         var data = {
             _logs: logs

@@ -1,3 +1,5 @@
+// common rules
+
 * {
   margin: 0;
   padding: 0;
@@ -9,10 +11,14 @@ body, html {
   height: 100%;
 }
 
+// header rules
+
 header {
   height: 70px;
   background: rgba(0, 0, 0, 0.2);
 }
+
+// content rules
 
 .content {
   min-height: 100%;
@@ -29,6 +35,8 @@ header {
 .content:after, footer {
   height: 200px;
 }
+
+// footer rules
 
 footer {
   background: rgba(0, 0, 0, 0.7);

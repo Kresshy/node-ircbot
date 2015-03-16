@@ -1,0 +1,35 @@
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+body, html {
+  background: rgba(0, 0, 0, 0.01);
+  height: 100%;
+}
+
+header {
+  height: 70px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.content {
+  min-height: 100%;
+  margin: 0 auto;
+  width: 1000px;
+  margin-bottom: -200px;
+}
+
+.content:after {
+  content: "";
+  display: block;
+}
+
+.content:after, footer {
+  height: 200px;
+}
+
+footer {
+  background: rgba(0, 0, 0, 0.7);
+}

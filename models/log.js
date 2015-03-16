@@ -3,12 +3,13 @@
  */
 
 var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
-var logSchema = mongoose.Schema({
+var logSchema = new Schema({
     nick: String,
     message: String,
-    channel: String,
+    channel: {type: Schema.Types.ObjectId, ref: 'IrcChannel'},
     date: {type: Date, default: Date.now}
 });
 
-module.exports = mongoose.model('Log', logSchema);
+module.exports = mongoose.model('LogModel', logSchema);

@@ -2,10 +2,11 @@
  * Created by Szabolcs on 2015.02.27..
  */
 
-var Client = require('./irc-client');
-var Channel = require('./irc-channel');
-var User = require('./irc-user');
-var Log = require('../../models/log');
+var IrcClient = require('./irc-client');
+var IrcChannel = require('./irc-channel');
+var IrcUser = require('./irc-user');
+var LogModel = require('../../models/log');
+var ChannelModel = require('../../models/channel');
 var EventEmitter = require('events').EventEmitter;
 
 var Bot = (function IrcBot() {
@@ -15,7 +16,7 @@ var Bot = (function IrcBot() {
 
     function ClientClass(config) {
 
-        var _client = Client.getInstance();
+        var _client = IrcClient.getInstance();
         var _channels = {};
         var _eventEmitter = new EventEmitter();
         var _commands = {};
@@ -34,7 +35,7 @@ var Bot = (function IrcBot() {
 
             _client.on('join', function (channel, nick) {
 
-                _channels[channel].addUser(new User(nick));
+                _channels[channel].addUser(new IrcUser(nick));
             });
 
             _client.on('names', function (channel, nicks) {
@@ -44,7 +45,7 @@ var Bot = (function IrcBot() {
 
                 for (var prop in nicks) {
                     if (nicks.hasOwnProperty(prop)) {
-                        users.push(new User(prop, nicks[prop]));
+                        users.push(new IrcUser(prop, nicks[prop]));
                     }
                 }
 
@@ -73,7 +74,7 @@ var Bot = (function IrcBot() {
                     return;
                 }
 
-                var log = new Log({
+                var log = new LogModel({
                     nick: from,
                     message: message,
                     channel: to
@@ -107,7 +108,22 @@ var Bot = (function IrcBot() {
         function initializeChannels(channels) {
 
             channels.forEach(function (value, index) {
-                _channels[value] = new Channel(value);
+
+                _channels[value] = new IrcChannel(value);
+
+                ChannelModel.findOne({name: value}).exec(function(err, channel) {
+                    if(!channel) {
+                        var channel = new ChannelModel({
+                            name: value
+                        });
+
+                        channel.save(function(err, channel) {
+                            if (err) {
+                                console.error(err.message);
+                            }
+                        });
+                    }
+                });
             });
         }
 
@@ -116,8 +132,6 @@ var Bot = (function IrcBot() {
             var helpText = "IrcBot Help:\n\n" +
                 "\n" +
                 "Commands:\n\n";
-
-            // TODO
 
             return helpText;
         }

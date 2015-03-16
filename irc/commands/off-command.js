@@ -12,7 +12,7 @@ command.log(false);
 
 command.handler(function(from, to, message, client) {
 
-    client.say(to, '@off -- Excluding previous message from logs');
+    client.say(to, '!off -- Excluding previous message from logs');
 });
 
 command.help('!off -- disable logging of the current message');

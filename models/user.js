@@ -11,4 +11,4 @@ var userSchema = new Schema({
     password: {type: String, required: '{PATH} is required!'}
 });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('IrcUser', userSchema);

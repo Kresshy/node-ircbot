@@ -83,10 +83,14 @@ function WebApp(config) {
     var app = express();
 
     /* initialize view template engine */
-    app.set('views', path.join(__dirname, 'views'));
-
-    app.engine('hbs', expressHbs({extname: 'hbs'}));
+    app.engine('hbs', expressHbs({
+        extname: 'hbs',
+        defaultLayout: 'main',
+        layoutsDir: __dirname + '/views/layouts/',
+        partialsDir: __dirname + '/views/partials/'
+    }));
     app.set('view engine', 'hbs');
+    app.set('views', path.join(__dirname, 'views'));
 
     // uncomment after placing your favicon in /public
     //app.use(favicon(__dirname + '/public/favicon.ico'));

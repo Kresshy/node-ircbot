@@ -8,31 +8,30 @@ var LogModel = require('../../models/log');
 var ChannelModel = require('../../models/channel');
 var router = express.Router();
 
-
 /* GET home page. */
 router.get('/', function(req, res) {
 
     var data = {};
 
-    function logQuery(cb) {
+    function logQuery(done) {
         LogModel.find().limit(40).exec(function (err, logs) {
 
             if (err) {
-                cb(err, null);
+                done(err, null);
             }
 
-            cb(null, logs);
+            done(null, logs);
         });
     }
 
-    function channelQuery(cb) {
+    function channelQuery(done) {
         ChannelModel.find().exec(function(err, channels) {
 
             if(err) {
-                cb(err, null);
+                done(err, null);
             }
 
-            cb(null, channels);
+            done(null, channels);
         });
     }
 
@@ -44,7 +43,9 @@ router.get('/', function(req, res) {
     function complete(err, results) {
 
         if(err) {
+            err.status = 500;
             next(err);
+            return;
         }
 
         data._logs = results[0];

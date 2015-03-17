@@ -6,6 +6,7 @@ function Command() {
     "use strict";
 
     var _name,
+        _privateCommand,
         _log,
         _handler,
         _help;
@@ -15,7 +16,7 @@ function Command() {
     }
 
     return {
-        on: function(name, log, handler) {
+        on: function(name, privateCommand, log, handler) {
 
             if (!isValidName(name)) {
                 console.error('bad command name format, should be: @commad');
@@ -23,6 +24,13 @@ function Command() {
             }
 
             _name = name;
+
+            if ('boolean' !== typeof privateCommand) {
+                console.error('bad privateCommand type, should be: true / false');
+                return;
+            }
+
+            _privateCommand = privateCommand;
 
             if ('boolean' !== typeof log) {
                 console.error('bad log type, should be: true / false');
@@ -49,6 +57,18 @@ function Command() {
             }
 
             _name = name;
+        },
+        privateCommand: function(privateCommand) {
+
+            if (arguments.length === 0)
+                return _privateCommand;
+
+            if ('boolean' !== typeof privateCommand) {
+                console.error('bad privateCommand type, should be: true / false');
+                return;
+            }
+
+            _privateCommand = privateCommand;
         },
         log: function(log) {
 

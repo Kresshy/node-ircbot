@@ -24,6 +24,7 @@ var User = require('../models/user');
 var index = require('./routes/index');
 var login = require('./routes/login');
 var logout = require('./routes/logout');
+var logs = require('./routes/logs');
 
 function WebApp(config) {
     "use strict";
@@ -107,6 +108,7 @@ function WebApp(config) {
     app.use('/', index);
     app.use('/login', login);
     app.use('/logout', logout);
+    app.use('/logs', logs);
 
     // catch 404 and forward to error handler
     app.use(function (req, res, next) {
@@ -125,8 +127,8 @@ function WebApp(config) {
 
             res.status(err.status || 500);
             res.render('error', {
-                message: err.message,
-                error: err
+                _message: err.message,
+                _error: err
             });
         });
     }
@@ -138,8 +140,8 @@ function WebApp(config) {
 
         res.status(err.status || 500);
         res.render('error', {
-            message: err.message,
-            error: {}
+            _message: err.message,
+            _error: {}
         });
     });
 

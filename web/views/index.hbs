@@ -1,6 +1,8 @@
 
 <div id="logs-container">
 {{#each _logs}}
-    <div class="log-item">{{nick}} - {{message}} - {{date}}</div>
+    <div class="log-item row {{_even @index}}">
+        <div class="col-md-1 nick">{{nick}}</div><div class="col-md-8 message">{{message}}</div><div class="col-md-3 date">{{date}}</div>
+    </div>
 {{/each}}
 </div>

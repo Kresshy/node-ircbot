@@ -20,20 +20,41 @@ header {
 
 // content rules
 
-.content {
+.container {
   min-height: 100%;
-  margin: 0 auto;
-  width: 1000px;
   margin-bottom: -200px;
 }
 
-.content:after {
+.container:after {
   content: "";
   display: block;
 }
 
-.content:after, footer {
+.container:after, footer {
   height: 200px;
+}
+
+// log container and items
+
+#logs-container {
+  padding: 20px 0;
+}
+
+.bg-alt {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.log-item {
+  padding: 5px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  & .nick {
+    font-weight: bold;
+  }
 }
 
 // footer rules

@@ -42,6 +42,8 @@ router.get('/', function(req, res) {
 
     function complete(err, results) {
 
+        var data = {};
+
         if(err) {
             err.status = 500;
             next(err);
@@ -50,6 +52,14 @@ router.get('/', function(req, res) {
 
         data._logs = results[0];
         data._channels = results[1];
+        data.helpers = {
+            _even: function(index) {
+                if (index % 2 === 1)
+                    return 'bg-alt';
+                else
+                    return 'bg-norm';
+            }
+        }
 
         res.render('index', data);
     }

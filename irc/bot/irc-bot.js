@@ -74,17 +74,26 @@ var Bot = (function IrcBot() {
                     return;
                 }
 
-                var log = new LogModel({
-                    nick: from,
-                    message: message,
-                    channel: to
+                ChannelModel.findOne({name: to}, function(err, channel) {
+                    if (err) {
+                        console.error('Error when saving log: ' + err);
+                        return;
+                    }
+
+                    var log = new LogModel({
+                        nick: from,
+                        message: message,
+                        channel: channel
+                    });
+
+                    log.save(function (err, log) {
+                        if (err) {
+                            console.error('Error when saving log: ' + err.message);
+                        }
+                    });
                 });
 
-                log.save(function (err, log) {
-                    if (err) {
-                        console.error('Error when saving log: ' + err.message);
-                    }
-                });
+
             });
 
             _client.on('pm', function(from, message) {

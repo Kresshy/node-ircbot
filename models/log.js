@@ -8,7 +8,7 @@ var Schema = mongoose.Schema;
 var logSchema = new Schema({
     nick: String,
     message: String,
-    channel: {type: Schema.Types.ObjectId, ref: 'IrcChannel'},
+    channel: {type: Schema.Types.ObjectId, ref: 'Channel'},
     date: {type: Date, default: Date.now}
 });
 

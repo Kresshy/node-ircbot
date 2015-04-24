@@ -17,9 +17,15 @@ command.log(true);
 
 command.handler(function(from, to, message, client) {
 
-    Log.find().sort({date: -1}).limit(10).exec(function (err, logs) {
+    Log.find().populate('channel').sort({date: -1}).limit(10).exec(function (err, logs) {
+
+        if (err) {
+            console.error('Error querying logs: ' + err);
+            return;
+        }
+
         logs.forEach(function (log) {
-            client.say(from, log.nick + ' - ' + log.channel + ' - ' + log.date + ' || ' + log.message);
+            client.say(from, log.nick + ' - ' + log.channel.name + ' - ' + log.date + ' || ' + log.message);
         });
     });
 });

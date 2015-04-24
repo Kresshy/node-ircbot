@@ -19,7 +19,7 @@ function Command() {
         on: function(name, privateCommand, log, handler) {
 
             if (!isValidName(name)) {
-                console.error('bad command name format, should be: @commad');
+                console.error('bad command name format, should be: !commad');
                 return;
             }
 
@@ -52,7 +52,7 @@ function Command() {
                 return _name;
 
             if (!isValidName(name)) {
-                console.error('bad command name format, should be: @command');
+                console.error('bad command name format, should be: !command');
                 return;
             }
 

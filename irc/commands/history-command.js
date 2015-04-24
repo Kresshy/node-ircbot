@@ -11,6 +11,8 @@ var command = new Command();
 
 command.name('!history');
 
+command.privateCommand(true);
+
 command.log(true);
 
 command.handler(function(from, to, message, client) {

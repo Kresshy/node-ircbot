@@ -62,6 +62,11 @@ var Bot = (function IrcBot() {
 
                     command = _commands[receivedCommand[0].trim()];
 
+                    if (command.privateCommand()) {
+                        _client.say(to, 'This is a private command please use /msg ' + config.botName);
+                        return;
+                    }
+
                     if (command !== undefined) {
                         command.handler()(from, to, message, _client);
                         logMessage = command.log();
@@ -97,7 +102,22 @@ var Bot = (function IrcBot() {
             });
 
             _client.on('pm', function(from, message) {
-                console.log(from + ' => ' + message);
+
+                var logMessage = true;
+                var receivedCommand = message.match(/^!.*?[^\s]+/i);
+                var command = null;
+
+                if (receivedCommand) {
+
+                    command = _commands[receivedCommand[0].trim()];
+
+                    if (command !== undefined) {
+                        command.handler()(from, from, message, _client);
+                        logMessage = command.log();
+                    } else {
+                        console.log('undefined private command');
+                    }
+                }
             });
 
             _client.on('quit', function (nick, reason, channels) {

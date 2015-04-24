@@ -6,7 +6,7 @@ function Command() {
     "use strict";
 
     var _name,
-        _privateCommand,
+        _privateCommand = false,
         _log,
         _handler,
         _help;

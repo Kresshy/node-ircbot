@@ -25,6 +25,7 @@ var index = require('./routes/index');
 var login = require('./routes/login');
 var logout = require('./routes/logout');
 var logs = require('./routes/logs');
+var register = require('./routes/register');
 
 function WebApp(config) {
     "use strict";
@@ -33,11 +34,19 @@ function WebApp(config) {
     var _port = process.env.PORT || config.port || 8080;
     var _eventEmitter = new EventEmitter();
 
-    /* initialize passport to use OAuth2 strategy */
-    passport.use(new LocalStrategy(
+    /* initialize passport to use local strategy */
+    passport.use(new LocalStrategy({
+            usernameField: 'email',
+            passwordField: 'password'
+        },
         function (email, password, done) {
+            console.log('authenticate: ' + email);
+
             User.findOne({email: email}, function (err, user) {
+                console.log(user);
+
                 if (err) {
+                    console.log('Authentication error: ' + err);
                     return done(err);
                 }
 
@@ -45,11 +54,15 @@ function WebApp(config) {
                     return done(null, false, {message: 'Incorrect email.'});
                 }
 
-                if (!user.validPassword(password)) {
-                    return done(null, false, {message: 'Incorrect password.'});
-                }
-
-                return done(null, user);
+                user.comparePassword(password, function(err, match) {
+                    if (err) {
+                        return done(null, false, {message: err});
+                    } else if (!match) {
+                        return done(null, false, {message: 'Incorrect password.'});
+                    } else {
+                        return done(null, user);
+                    }
+                });
             });
         }
     ));
@@ -77,7 +90,7 @@ function WebApp(config) {
         if (req.isAuthenticated())
             return next();
         else
-            res.send('Authentication required');
+            res.render('login', {error: 'Authentication required'});
     }
 
     /* initialize express application middlewares */
@@ -105,10 +118,11 @@ function WebApp(config) {
     app.use(passport.session());
 
     /* routes and handlers */
-    app.use('/', index);
     app.use('/login', login);
     app.use('/logout', logout);
+    app.use('/register', register);
     app.use('/logs', logs);
+    app.use('/', authenticated, index);
 
     // catch 404 and forward to error handler
     app.use(function (req, res, next) {
